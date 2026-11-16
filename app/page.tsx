@@ -3,8 +3,10 @@
 import { useState } from "react";
 import ImageInput from "../components/ImageInput";
 import IngredientEditor from "../components/ingredientseditor";
+import RecipeCard from "../components/Recipecard";
 import { resizeImage } from "../lib/image";
 import { type Ingredient, mergeIngredients } from "../lib/ingredients";
+import type { Recipe } from "../lib/recipes";
 
 export default function Home() {
   const [image, setImage] = useState<File | null>(null);
@@ -12,6 +14,35 @@ export default function Home() {
   const [isDetecting, setIsDetecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [recipes, setRecipes] = useState<Recipe[] | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [recipeError, setRecipeError] = useState<string | null>(null);
+
+  async function handleSearchRecipes() {
+    if (ingredients.length === 0) return;
+
+    setIsSearching(true);
+    setRecipeError(null);
+    setRecipes(null);
+
+    try {
+      const response = await fetch("/api/recipes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ingredients: ingredients.map((item) => item.name) }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error ?? "Gagal membuat resep.");
+      }
+      setRecipes(data.recipes);
+    } catch (searchError) {
+      setRecipeError(searchError instanceof Error ? searchError.message : "Terjadi kesalahan.");
+    } finally {
+      setIsSearching(false);
+    }
+  }
 
   function handleImageChange(file: File | null) {
     setImage(file);
@@ -96,13 +127,32 @@ export default function Home() {
           </div>
         </details>
 
-        {/* Placeholder untuk Tahap 6 */}
         <button
-          disabled={ingredients.length === 0}
-          className="mt-6 w-full rounded-xl bg-amber-600 px-4 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
+          onClick={handleSearchRecipes}
+          disabled={ingredients.length === 0 || isSearching}
+          className="mt-6 w-full rounded-xl bg-amber-600 px-4 py-3 font-medium text-white hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Cari Resep (segera hadir)
+          {isSearching ? "Mencari resep..." : "Cari Resep"}
         </button>
+
+        {recipeError && (
+          <p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+            {recipeError}
+          </p>
+        )}
+
+        {recipes && (
+          <section className="mt-6 space-y-4" aria-label="Hasil resep">
+            <h2 className="text-xl font-bold text-amber-900">Bisa dimasak hari ini</h2>
+            {recipes.map((recipe, index) => (
+              <RecipeCard key={recipe.title} recipe={recipe} defaultOpen={index === 0} />
+            ))}
+            <p className="text-xs text-gray-500">
+              Resep dibuat oleh AI dan takarannya hanya perkiraan. Pastikan bahan dimasak matang
+              dan cek alergi sebelum memasak.
+            </p>
+          </section>
+        )}
       </div>
     </main>
   );
