@@ -37,7 +37,7 @@ export default function Home() {
 
       <div className="mx-auto max-w-xl px-4 pb-16">
         {/* Tab */}
-        <div role="tablist" aria-label="Pilih fitur" className="grid grid-cols-2 gap-2 py-5">
+        <div role="tablist" aria-label="Pilih fitur" className=" grid grid-cols-2 gap-2 py-5">
           {TABS.map((item) => {
             const active = tab === item.id;
             return (
@@ -68,6 +68,16 @@ export default function Home() {
         <div role="tabpanel" hidden={tab !== "dish"}>
           <DishAnalyzer onUseIngredients={handleUseIngredients} />
         </div>
+
+        <footer className="mt-12 border-t border-amber-200/60 pt-6 text-xs leading-relaxed text-stone-500">
+          <p>
+            <strong className="font-semibold text-stone-600">Privasi:</strong> Jangan unggah foto yang
+            bersifat pribadi.
+          </p>
+          <p className="mt-2">
+            Hasil ini hanya perkiraan dan bukan acuan alergi atau gizi.
+          </p>
+        </footer>
       </div>
     </main>
   );

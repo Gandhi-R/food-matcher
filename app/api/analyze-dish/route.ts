@@ -1,5 +1,9 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { NextResponse } from "next/server";
+import { rateLimit } from "../../../lib/ratelimit";
+
+// Batas waktu fungsi di Vercel (detik)
+export const maxDuration = 30;
 
 const MAX_BYTES = 4 * 1024 * 1024;
 const MAX_NAME_LENGTH = 60;
@@ -31,6 +35,9 @@ function asText(value: unknown): string {
 }
 
 export async function POST(request: Request) {
+  const limited = rateLimit(request);
+  if (limited) return limited;
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return NextResponse.json({ error: "GEMINI_API_KEY belum diatur di server." }, { status: 500 });

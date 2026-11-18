@@ -1,5 +1,9 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { NextResponse } from "next/server";
+import { rateLimit } from "../../../lib/ratelimit";
+
+// Batas waktu fungsi di Vercel (detik)
+export const maxDuration = 30;
 
 // Batas ukuran di server. Vercel membatasi body request sekitar 4,5 MB.
 const MAX_BYTES = 4 * 1024 * 1024;
@@ -15,6 +19,9 @@ Aturan:
 - Jika tidak ada bahan makanan di gambar, kembalikan daftar kosong.`;
 
 export async function POST(request: Request) {
+  const limited = rateLimit(request);
+  if (limited) return limited;
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
