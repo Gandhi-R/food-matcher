@@ -31,9 +31,9 @@ export default function IngredientEditor({ ingredients, onChange }: Props) {
   }
 
   return (
-    <section className="rounded-2xl bg-white p-4">
+    <section className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold text-amber-900">Bahan kamu</h2>
+        <h2 className="font-semibold text-amber-950">Bahan kamu</h2>
         {ingredients.length > 0 && (
           <button
             onClick={() => onChange([])}

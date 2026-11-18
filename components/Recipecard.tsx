@@ -2,8 +2,8 @@ import type { Recipe } from "../lib/recipes";
 
 export default function RecipeCard({ recipe, defaultOpen }: { recipe: Recipe; defaultOpen?: boolean }) {
   return (
-    <article className="rounded-2xl bg-white p-4 shadow-sm">
-      <h3 className="text-lg font-semibold text-amber-900">{recipe.title}</h3>
+    <article className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+      <h3 className="font-serif text-lg font-semibold text-amber-950">{recipe.title}</h3>
       <p className="mt-1 text-sm text-gray-600">{recipe.description}</p>
 
       <p className="mt-2 text-xs text-gray-500">
